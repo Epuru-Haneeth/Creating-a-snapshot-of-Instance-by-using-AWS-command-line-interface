@@ -1,0 +1,35 @@
+Here I am going to create a snapshot of my Instance by using AWS command line interface.
+
+Step : 1 
+Create a instance with any name, Ex: 'AMI-Snapshot'
+(Here I am taking linux machine, size: t2.micro)
+
+Step : 2
+Create an IAM role with neccessary permissions.
+	2.1 - Navigate to IAM role -> Create Role
+	2.2 - select 'Trusted entity type: AWS service';'Use case: EC2' -> Next
+	2.3 - Permissions : 	AdministratorAccess
+				AmazonEC2FullAccess
+				AmazonEC2RoleforSSM
+	2.4 -  Give a name -> create role
+
+Step : 3
+Attach IAM role to 'AMI-Snapshot' instance
+Navigate to EC2 instances -> select Instance -> Actions -> Security -> Modify IAM role -> from dropdown select IAM role you created -> Update IAM role.
+
+Step : 4
+connect to EC2 Instance('AMI-Snapshot')
+Navigate to EC2 instances -> select Instance -> Connect to EC2 instance
+
+Step : 5 
+	In latest versions by default CLI is intalled.
+	If not installed install by using : sudo yum install aws-cli
+To see our instance volumes run: 
+	aws ec2 describe-volumes --query 'Volumes[*].[VolumeId,Attachments[0].InstanceId,Attachments[0].Device]' --output table
+it will give volumes copy the vol ID associated with 'AMI-Snapshot' instance ID
+
+Step : 6
+Now to take snapshot run:
+aws ec2 create-snapshot --volume-id <your-instance-volume-id> --description "Snapshot for instance volume" --tag-specifications 'ResourceType=snapshot,Tags=[{Key=Name,Value=Anything}]'
+in the place of <your-instance-volume-id> paste your Vol-ID which you copied.
+Now, you can see you created a snapshot.
